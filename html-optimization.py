@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP # Parameter is not strictly needed now, but good practice to keep if you add more complex params later
 from langchain.prompts import PromptTemplate
 from langchain_anthropic import ChatAnthropic
+import os
 
 # Create the FastMCP instance with stdio transport
 mcp = FastMCP()
@@ -33,7 +34,7 @@ def get_html_optimization(html_content: str) -> str:
     ```"""
     prompt = PromptTemplate.from_template(template)
 
-    anthropic_api_key = ""
+    anthropic_api_key = os.environ.get('ANTHROPIC_API_KEY')
     chat_model = ChatAnthropic(
         anthropic_api_key=anthropic_api_key,
         model_name="claude-4-sonnet-20250514"
