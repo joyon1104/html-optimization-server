@@ -1,7 +1,10 @@
 from mcp.server.fastmcp import FastMCP # Parameter is not strictly needed now, but good practice to keep if you add more complex params later
 from langchain.prompts import PromptTemplate
 from langchain_anthropic import ChatAnthropic
+
 import os
+import json
+import datetime
 
 # Create the FastMCP instance with stdio transport
 mcp = FastMCP()
@@ -61,6 +64,34 @@ def get_html_optimization_test_input() -> str:
     
     return optimized_html.content
 
+def get_html_optimization_file(result: str):
+    # 결과 저장 기본 디렉터리
+    result_dir = os.path.join(os.path.dirname(__file__), "result")
+    os.makedirs(result_dir, exist_ok=True)
+
+    # 하위 폴더명 예: 현재 시각 기반 'YYYYMMDD_HHMMSS' 형식
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    session_dir = os.path.join(result_dir, timestamp)
+    os.makedirs(session_dir, exist_ok=True)
+
+    # json 파일 저장
+    result_path = os.path.join(session_dir, "optimized_result.json")
+    with open(result_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    # JSON 파일 읽기
+    with open(result_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # html 파일로 저장
+    html_path = os.path.join(session_dir, "optimized.html")
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(data.get("html", ""))
+
+    # css 파일로 저장
+    css_path = os.path.join(session_dir, "optimized.css")
+    with open(css_path, "w", encoding="utf-8") as f:
+        f.write(data.get("css", ""))
 
 # # Run the server if the script is executed directly
 # if __name__ == "__main__":
@@ -72,12 +103,6 @@ if __name__ == "__main__":
     # test_html = "<div style='color:red;'>테스트</div>"
     # result = get_html_optimization(test_html)
     # print(result)
-
+    
     result = get_html_optimization_test_input()
-
-    # 결과를 result 폴더의 markdown 파일로 저장
-    result_dir = os.path.join(os.path.dirname(__file__), "result")
-    os.makedirs(result_dir, exist_ok=True)
-    result_path = os.path.join(result_dir, "optimized_result.md")
-    with open(result_path, "w", encoding="utf-8") as f:
-        f.write(result)
+    get_html_optimization_file(result)
