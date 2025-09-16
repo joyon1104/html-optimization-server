@@ -1,0 +1,4 @@
+{
+  "html": "<p class=\"test-text\">테스트</p>",
+  "css": ":root {\n  --primary-color: #ff0000;\n}\n\n.test-text {\n  color: var(--primary-color);\n}"
+}
